@@ -1,70 +1,90 @@
 // Given an array of numbers. Print frequency of each unique number. (Frequency is the count of particular element divided by the count of all elements)
 
-// Solution
+// Solution 1
 
-function frequency(arr){
+function getFrequnecy(arr){
   let obj = {};
-  for(let item of arr){
-    if(!obj[item]){
-      obj[item] = 0
+  arr.forEach(item => {
+    if(!obj.hasOwnProperty(item)){
+      obj[item] = 0;
     }
-    obj[item]++
-  }
-  for(let key in obj){
-    obj[key] /= arr.length;
+    obj[item] += 1;
+  })
+  for(let value in obj){
+    obj[value] /= arr.length
   }
   return obj;
 }
-console.log(frequency([1, 1, 2, 2, 3]))
-console.log(frequency([4,4]))
-console.log(frequency([1, 2, 3]))
+console.log(getFrequnecy([1, 1, 2, 2, 3]))
+console.log(getFrequnecy([4,4]))
+console.log(getFrequnecy([1, 2, 3]))
 
-Second solution
+// Solution 2
 
-function frequency(array){
-  let firstObj = array.reduce((obj, item) => {
-    obj[item] = obj[item] + 1 || 1;
-    return obj;
-  }, {});
-  for(let key in firstObj){
-    firstObj[key] /= array.length;
+function freq(arr){
+  let count = 0;
+  let obj = {};
+  for(let i = 0; i < arr.length; i++){
+    if(obj.hasOwnProperty(arr[i])){
+      continue;
+    }
+    for(let j = 0; j < arr.length; j++){
+      if(arr[i] === arr[j]){
+        count++
+      }
+    }
+    obj[arr[i]] = count / arr.length;
+    count = 0;
   }
-  return firstObj;
+  return obj;
 }
-console.log(frequency([1, 1, 2, 2, 3]))
-console.log(frequency([4,4]))
-console.log(frequency([1, 2, 3]))
+console.log(freq([1, 1, 2, 2, 3]))
 
-// Given an array of strings and numbers. Print the number of integers and the number of strings in the array.
 
-// Solution
+/*Given an array of strings and numbers. Print the number of integers and the number of strings in the array.
 
-function strOrNum(str){
+Solution 1*/
+
+function strOrNum(arr){
   let obj = {
-    numbers: 0,
-    strings: 0,
+    Numbers: 0,
+    Strings: 0
   };
-  str.filter(item => {
+  arr.filter(item => {
     if(typeof item === 'number'){
-      obj['numbers'] += 1;
+      obj['Numbers'] = obj['Numbers'] + 1
     }
     if(typeof item === 'string'){
-      obj['strings'] += + 1
+      obj['Strings'] += 1;
     }
-  })
+  });
   return obj;
 }
 console.log(strOrNum([1, '10', 'hi', 2, 3]))
-console.log(strOrNum([1, 4, 'i am a string', '456']))
 
-// Write a function that accepts a string(a sentence) as a parameter and finds the longest word within the string.
-// If there are several words which are the longest ones, print the last word(words can be separated by space, comma or hyphen).
+/*Solution 2*/
 
-// Solution
+function strOrNum(arr){
+  let countForNumbers = 0;
+  let countForStrings = 0;
+  for(let key of arr){
+    if(typeof key === 'number') countForNumbers++;
+    if(typeof key === 'string') countForStrings++;
+  }
+  return 'Numbers: ' + countForNumbers + ', ' + 'Strings: ' + countForStrings;
+}
+console.log(strOrNum([1, '10', 'hi', 2, 3]))
+
+
+/*Write a function that accepts a string(a sentence) as a parameter and finds the longest word within the string.
+If there are several words which are the longest ones, print the last word(words can be separated by space, comma or hyphen).
+
+Solution 1*/
 
 function getLonger(str){
   let result = '';
-  let arr = str.split(' ');
+  let reg = /[,-. ]/g;
+  let arr = str.replace(reg, '*').split('*')
   arr.filter(item => {
     if(item.length >= result.length){
       result = item;
@@ -72,8 +92,29 @@ function getLonger(str){
   });
   return result;
 }
-console.log(getLonger('A revolution without revolution dancing is a revolution not worth hang'))
-console.log(getLonger('”Which would be worse - to live as a monster , or to die as a good man?”'))
+console.log(getLonger('A revolution without revolution dancing, is a revolution not worth having'))
+console.log(getLonger('Which would be worse - to live as a monster, or to die as a good man?'))
+
+// Solution 2
+
+const sentence = str => {
+  let longestStr = '';
+  let newStr = '';
+  for(let i = 0; i < str.length; i++){
+    if(str[i] === '-' || str[i] === '.' || str[i] === ',' || str[i] === ' ' || str[i] === '.'){
+      if(newStr.length >= longestStr.length){
+        longestStr = newStr;
+      }
+      newStr = '';
+    }
+    else{
+      newStr += str[i];
+    }
+  }
+  return longestStr;
+}
+console.log(sentence('Which would be worse - to live as a monster , or to die as a goooooo-ood man?'))
+
 
 // Write a function to find longest substring in a given a string without repeating characters except space character.
 // If there are several, return the last one. Consider that all letters are lowercase.
@@ -86,7 +127,7 @@ function longestSubstring(str) {
     let matchString = '';
     for(let j = i; j < str.length; j++){
       if(!matchString.includes(str[j]) || str[j] === ' '){
-        matchString = matchString.concat(str[j])
+        matchString += str[j];
       }
       else{
         if(matchString.length >= result.length){
@@ -101,28 +142,27 @@ function longestSubstring(str) {
 console.log(longestSubstring(`parting your soup is not a miracle, bruce.`));
 console.log(longestSubstring(`there are no two words in the english language more harmful than 'good job'.`));
 
-// Write a function to compute a new string from the given one by moving the first char to come after the next two chars, so "abc" yields "bca".
-// Repeat this process for each subsequent group of 3 chars. Ignore any group of fewer than 3 chars at the end.
+/*Write a function to compute a new string from the given one by moving the first char to come after the next two chars, so "abc" yields "bca".
+Repeat this process for each subsequent group of 3 chars. Ignore any group of fewer than 3 chars at the end.
 
-// Solution
+Solution*/
 
-function movingFirstToThird(str) {
-  let result = ''
-  let globalStr = str.split('');
-  for(let i = 0; i < globalStr.length; i++){
-    let devided = globalStr.splice(0, 3);
-    if(devided.length === 3){
-      let firstChar = devided.shift();
-      devided = devided.concat(firstChar).join('')
+function movingFirstToThird(str){
+  let newArr = [];
+  let arr = str.split('');
+  for(let i = 0; i < arr.length; i++){
+    let part = arr.splice(0, 3);
+    if(part.length === 3){
+      let fromStart = part.shift();
+      part.push(fromStart);
+      newArr.push(part)
       i--;
-      result += devided;
     }
     else{
-      devided = devided.join('')
-      result += devided;
+      newArr.push(part)
     }
   }
-  return result
+  return newArr.flat().join('');
 }
 console.log(movingFirstToThird('dfgjkloyp'))
 console.log(movingFirstToThird('aweyoolp'))
@@ -133,7 +173,7 @@ console.log(movingFirstToThird('aweyoolp'))
 // Solution
 
 function negativesProducts(arr) {
-  if(arr.find(item => !Array.isArray(item))){
+  if(!Array.isArray(arr) || !arr.length || !arr.every(item => Array.isArray(item))){
     return 'Invalid Argument'
   }
   if(!arr.flat().find(item => item < 0)){
